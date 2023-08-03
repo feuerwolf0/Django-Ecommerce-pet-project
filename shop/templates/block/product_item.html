@@ -1,0 +1,73 @@
+{% for item in products %}
+<!-- Product Item -->
+<div class="product-list col-xs-12">
+    <div class="product-item row">
+        <div class="item-overlay">
+            <div class="clickable">
+                <a href="#">/shop/{{ item.id }}</a>
+            </div>
+        </div>
+        <div class="image text-center mr-3 bg-white col-md-6">
+            <a href="/shop/{{ item.id }}"><img src="{{ item.image.first.image.url }}"
+                                               alt="{{ item.title }}"></a>
+            {% if item.old_price %}
+            <span class="badge badge-danger bg-danger ms-3 badge-sale">СКИДКА {{ item.get_percent_discount }}%</span>
+            {% endif %}
+        </div>
+        <div class="caption col-md-6">
+            <div class="name">
+                <a href="/shop/{{ item.id }}">{{ item.title }}</a>
+            </div>
+            <div class="description">
+                <p>{{ item.preview_about }}</p>
+            </div>
+            <div class="stock">
+                <span>На складе:
+                    {% if item.stock == 0 %}
+                    <span class="text-danger stock-value">Нет в наличии</span>
+                    {% elif item.stock < 10 %}
+                    <span class="text-warning stock-value">Мало</span>
+                    {% else %}
+                    <span class="text-success stock-value">Много</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="price">
+                <span>Цена: {{ item.price }} руб </span>
+                {% if item.old_price %}
+                <span class="text-decoration-line-through text-muted">{{ item.old_price }} руб</span>
+                {% endif %}
+            </div>
+            <div class="cart">
+                {% if item.stock %}
+                    {% if item.id in cart.list_items %}
+                    <button type="button" class="btn btn-success" disabled><i class="me-1 fa fa-shopping-basket"></i>Товар в корзине
+                    {% else %}
+                    <button type="button" data-product="{{ item.id }}" data-bool="0" class="btn btn-success add-cart"><i class="me-1 fa fa-shopping-basket"></i>Добавить в корзину</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+                {% if item in wishlist.products.all %}
+                <button type="button" class="btn btn-default add-wishlist text-danger" data-toggle="tooltip"
+                            data-placement="right" data-product="{{ item.id }}" title="Удалить из избранного">
+                <i class="fa fa-heart"></i>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-default add-wishlist" data-toggle="tooltip"
+                            data-placement="right" data-product="{{ item.id }}" title="Добавить в избранное">
+                <i class="fa fa-heart"></i>
+                </button>
+                {% endif %}
+            {% endif %}
+            <div class="product-tag">
+                <a href="/shop/category/{{ item.category.slug }}/">{{ item.category.name|upper }}:</a>
+                {% for tag in item.tags.all %}
+                <a href="/shop/tag/{{ tag.slug }}">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ Product Item -->
+{% endfor %}

@@ -1,0 +1,36 @@
+{% for post in posts %}
+<article class="blog-post mt-5">
+    <h2 class="display-5 link-body-emphasis mb-1">{{ post.title }}</h2>
+    <span style="color: white;">Тэги:</span>
+    {% for post_tag in post.tags.all %}
+        <a class="text-decoration-none" href="/tag/{{ post_tag.slug }}">
+            <span class="badge badge-secondary px-1">{{ post_tag }}</span>
+        </a>
+    {% endfor %}
+    <p class="blog-post-meta">{{ post.published|date:"j M Y H:i" }} </p>
+
+    <p>
+        {{ post.content }}
+    </p>
+    <div class="container-fluid">
+        <div class="d-flex justify-content-end">
+                {% if user.profile in post.likes.all %}
+                    <button type="button" class="btn btn-default text-danger me-3 like-btn"
+                            data-post="{{ post.id }}" title="Убрать лайк">
+                        <i class="bi bi-heart-fill"></i>
+                        <span class="ps-1 likes-count">{{ post.num_of_likes }}</span>
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-default text-secondary me-3 like-btn"
+                            data-post="{{ post.id }}" title="Поставить лайк">
+                        <i class="bi bi-heart-fill"></i>
+                        <span class="ps-1 likes-count">{{ post.num_of_likes }}</span>
+                    </button>
+                {% endif %}
+            <a href="/post/{{ post.id }}">
+                <button type="button" class="btn btn-info px-3">Читать</button>
+            </a>
+        </div>
+    </div>
+</article>
+{% endfor %}

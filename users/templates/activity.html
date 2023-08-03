@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}
+Профиль {{ user.username }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl px-4 mt-4 d-lg-block min-vh-100 ">
+    <!-- Account page navigation-->
+{% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Profile picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header text-center">Мои активности</div>
+                <div class="card-body">
+                    <ul>
+                        <li>В этом разделе отображены комментарии и вопросы которые вы оставляли</li>
+                        <li>Чтобы удалить комментарий или вопрос нажмите крестик</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">Детали профиля: {{ user.username }} <span>Создан: {{ user.profile.created_at }}</span></div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-light" role="alert">
+                            {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <h4>Комментарии</h4>
+                    {% if not comments %}
+                     <div class="alert alert-light" role="alert">
+                         Комментариев нет
+                     </div>
+                    {% endif %}
+                    {% for comment in comments %}
+                    <hr class="hr" />
+                        <div class="text-center"><a href="{% url 'blog:index' %}post/{{ comment.post.id }}"> <h6>{{ comment.post.title }}</h6></a></div>
+                        <div class="card-body bg-transparent p-0">
+                            <div class="d-flex flex-start align-items-center">
+                                <div class="comment-img rounded-circle shadow-1-strong me-3">
+                                    <img src="{{ comment.owner.avatar.url }}" alt="ava" width="37">
+                                </div>
+                            <div>
+                                <p class="text-muted small mb-0">
+                                    {{ comment.published|date:"j M Y H:m" }}
+                                </p>
+                            </div>
+                                {% if not comment.approved %}
+                                <p class="ms-auto text-success"> На модерации </p>
+                                {% endif %}
+                                <form method="POST" class="ms-auto">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.id }}"/>
+                                    <button type="submit" onclick="return confirmDelete()" class="ms-auto btn-close btn-close-white" aria-label="Close"></button>
+                                </form>
+                        </div>
+
+                    <p class="mt-1 mb-1 pb-1">
+                        {{ comment.content }}
+                    </p>
+                </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

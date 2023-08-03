@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Главная {% endblock %}
+{% block content %}
+<main class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+
+            {% include 'block/article.html' %}
+            {% include 'block/pagination.html' %}
+
+        </div>
+        {% include 'block/rightbar.html' %}
+    </div>
+</main>
+{% endblock %}

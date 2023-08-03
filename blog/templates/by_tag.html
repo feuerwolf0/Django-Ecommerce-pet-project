@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ tag_name }} {% endblock %}
+{% block content %}
+<main class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h5 class="mt-5">Все посты по тегу: {{ tag_name }}</h5>
+                    {% if not posts %}
+                    <div class="alert alert-light mt-5" role="alert">
+                        Посты отсутствуют
+                    </div>
+                    {% endif %}
+
+                    {% include 'block/article.html' %}
+                </div>
+                <h5 class="my-5">Все товары по тегу: {{ tag_name }}</h5>
+                {% for item in products %}
+                <!-- Product Item -->
+                <div class="product-list col-md-12">
+                    <div class="product-item">
+                        <div class="item-overlay">
+                            <div class="clickable">
+                                <a href="#">/shop/{{ item.id }}</a>
+                            </div>
+                        </div>
+                        <div class="image text-center mr-3">
+                            <a href="/shop/{{ item.id }}"><img src="{{ item.image.first.image.url }}"
+                                                               alt="{{ item.title }}"></a>
+                        </div>
+                        <div class="caption">
+                            <div class="name">
+                                <a href="/shop/{{ item.id }}">{{ item.title }}</a>
+                            </div>
+                            <div class="description">
+                            <p>{{ item.preview_about }}</p>
+                            </div>
+                            <div class="stock">
+                                <span>На складе:
+                                {% if item.stock < 5 %}
+                                <span class="text-danger stock-value">Мало</span>
+                                {% else %}
+                                <span class="text-success stock-value">Много</span>
+                                {% endif %}
+                                </span>
+                            </div>
+                            <div class="price">
+                                <span>Цена: {{ item.price }} руб.</span>
+                            </div>
+                            <div class="cart">
+                                <button type="button" class="btn btn-success">Добавить в корзину</button>
+                            </div>
+                        </div>
+                        {% if user.is_authenticated %}
+                        {% if item in wishlist.products.all %}
+                        <button type="button" class="btn btn-default add-wishlist text-danger" data-toggle="tooltip"
+                                data-placement="right" data-product="{{ item.id }}" title="Удалить из избранного">
+                            <i class="fa fa-heart"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-default add-wishlist" data-toggle="tooltip"
+                                data-placement="right" data-product="{{ item.id }}" title="Добавить в избранное">
+                            <i class="fa fa-heart"></i>
+                        </button>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <!--/ Product Item -->
+                {% endfor %}
+            </div>
+        </div>
+         {% include 'block/rightbar.html' %}
+    </div>
+</main>
+{% endblock %}

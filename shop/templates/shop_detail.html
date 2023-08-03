@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}
+{{ product.title }}
+{% endblock %}
+{% block content %}
+<section class="pt-5 pb-2">
+  <div class="container">
+    <div class="row">
+      <aside class="col-lg-6">
+        <div id='carousel' class="rounded-4 mb-3 d-flex justify-content-center detail-image overflow-hidden text-center bg-white">
+            <img style="max-width: 100%; max-height: 100%;" class="rounded-4 object-fit-contain main-image" src="{{ product.image.first.image.url }}" />
+        </div>
+        <div id='carousel' class="overlay carousel slide" data-bs-ride="carousel">
+          <img class="overlay-image" src="" alt="">
+          <button class="carousel-control-prev " type="button" data-bs-target="#carousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon filter-light p-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next " type="button" data-bs-target="#carousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon filter-light p-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="d-flex justify-content-center mb-3">
+          {% for pic in product.image.all %}
+            <img width="60" height="60" 
+            class="{% if forloop.first %}border border-4 border-warning {% endif %} mx-1 rounded-2 object-fit-contain bg-white thumbnail-image" 
+            src="{{ pic.image.url }}" />
+          {% endfor %}
+        </div>
+      </aside>
+      <main class="col-lg-6">
+        <div class="ps-lg-3">
+          <h4 class="title text-light">
+            {{ product.title }}
+          </h4>
+          <div class="d-flex flex-row my-3 fw-bolder">
+            <!-- <span class="text-muted"><i class="fas fa-shopping-basket fa-sm mx-1"></i>154 orders</span> -->
+           <span class="fw-normal">Наличие на складе: 
+              {% if product.stock == 0 %}
+              <span class="text-dander ms-2 fw-bolder">Нет в наличии</span>
+              {% elif product.stock < 10 %}
+              <span class="text-warning ms-2 fw-bolder">Мало</span>
+              {% else %}
+              <span class="text-success ms-2 fw-bolder">Много</span>
+              {% endif %}
+           </span>
+          </div>
+
+          <div class="mb-3">
+            <span class="h5">{{ product.price }} руб</span>
+            {% if product.old_price %}
+            <span class="text-muted text-decoration-line-through">{{ product.old_price }} руб</span><span class="badge bg-danger ms-3 p-2 fs-6">СКИДКА {{ product.get_percent_discount }}%</span>
+            {% endif %}
+          </div>
+          <p>
+            {{ product.preview_about }}
+          </p>
+
+          <hr />
+          {% if product.stock %}
+          <div class="row mb-4">
+            <div class="col-12 mb-3">
+              <label class="mb-2 d-block">Количество</label>
+              <div class="input-group mb-3" style="width: 170px;">
+                <button class="btn btn-dark border border-secondary px-3 btn-number disabled" type="button" data-type="minus">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input type="text" class="form-control text-center border border-secondary bg-dark text-light input-number" 
+                placeholder="1" aria-label="Количество товара" value="1" min="1" max="{{ product.stock }}"/>
+                <button class="btn btn-dark border border-secondary px-3 btn-number" type="button" data-type="plus">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <a href="{% url 'store:cart_view' %}" class="btn btn-danger shadow-0 my-1">Купить </a>
+          {% if product.id in cart.list_items %}
+          <button type="button" class="btn btn-success shadow-0 my-1" disabled> <i class="me-1 fa fa-shopping-basket"></i> Товар в корзине </button>
+          {% else %}
+          <button type="button" data-product="{{ product.id }}" data-bool="1" class="btn btn-success shadow-0 my-1 add-cart"> <i class="me-1 fa fa-shopping-basket"></i> Добавить в корзину </button>
+          {% endif %}
+          {% if user.is_authenticated %}
+            {% if product in wishlist.products.all %}
+            <button type="button" data-type="detail" data-product="{{ product.id }}" 
+            class="btn btn-light border border-secondary icon-hover px-3 my-1 add-wishlist"> 
+              <i class="me-1 fa fa-heart fa-lg text-danger"></i> Удалить из избранного 
+            </button>
+            {% else %}
+            <button type="button" data-type="detail" data-product="{{ product.id }}" 
+            class="btn btn-light border border-secondary icon-hover px-3 my-1 add-wishlist"> 
+              <i class="me-1 fa fa-heart fa-lg"></i> В избранное 
+            </button>
+            {% endif %}
+          {% endif %}
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+<!-- content -->
+
+<section class="bg-transparent py-4">
+  <div class="container">
+    <div class="row gx-4">
+      <div class="col-lg-8 mb-4">
+        <div class="border rounded-2 px-3 py-2 bg-dark">
+          <!-- Pills navs -->
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-description" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Описание</button>
+              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-specification" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Технические характеристики</button>
+              <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-shipping" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Доставка</button>
+            </div>
+          </nav>
+          <!-- Pills navs -->
+          <!-- Pills content -->
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-description" role="tabpanel" aria-labelledby="nav-description-tab">
+              <p class="mt-3">
+                {{ product.about }}
+              </p>
+            </div>
+            <div class="tab-pane fade" id="nav-specification" role="tabpanel" aria-labelledby="nav-specification-tab">
+              <p class="mt-3">
+              {{ product.features }}
+              </p>
+            </div>
+            <div class="tab-pane fade" id="nav-shipping" role="tabpanel" aria-labelledby="nav-shipping-tab">
+              <p class="mt-3">
+                Наша команда специалистов по доставке тщательно упакует ваш товар и передаст его проверенным службам доставки, чтобы гарантировать его безопасность и сохранность во время транспортировки. Мы сотрудничаем с надежными партнерами, чтобы ваш заказ был доставлен точно в указанные сроки.
+
+                Мы предлагаем несколько вариантов доставки, чтобы соответствовать вашим потребностям и предпочтениям. Вы можете выбрать стандартную доставку, которая обычно занимает от 3 до 5 рабочих дней, или воспользоваться экспресс-доставкой для получения товара в кратчайшие сроки.
+
+                Пожалуйста, убедитесь, что вы указали правильный адрес доставки и контактные данные, чтобы избежать задержек или проблем с доставкой. Если у вас возникнут вопросы или нужна помощь, наша служба поддержки всегда готова помочь вам.
+              </p>
+            </div>
+          </div>
+          <!-- Pills content -->
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="px-0 border rounded-2 shadow-0">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Новинки</h5>
+              {% for item in last_products %}
+              <!-- novelty -->
+              <div class="d-flex mb-3">
+                <a href="#" class="me-3">
+                  <img src="{{ item.image.first.image.url }}" style="min-width: 96px; height: 96px;" class="img-md img-thumbnail object-fit-contain bg-white" />
+                </a>
+                <div class="info">
+                  <a href="#" class="nav-link mb-1">
+                    {{ item.title }}
+                  </a>
+                  <strong class="text-light"> {{ item.price }}</strong>
+                </div>
+              </div>
+              <!-- end novelty -->
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

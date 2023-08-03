@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}
+Оплата заказа
+{% endblock %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    {% if user.is_authenticated %}
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    {% endif %}
+    <div class="card mb-4">
+            <div class="card-header text-center">
+                Оплата заказа № {{order.unique_id}}
+            </div>
+            
+        <div class="card-body p-0">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-address">
+                        <h5 class="text-center">Данные заказа</h5>
+                        <ul class="m-3 list-group">
+                            <li class="list-group-item border-0"><span>ФИО:</span> {{ order.full_name }}</li>
+                            <li class="list-group-item border-0"><span>Телефон:</span> {{ order.phone_number }}</li>
+                            <li class="list-group-item border-0"><span>Адрес:</span> {{ order.address }}</li>
+                            <li class="list-group-item border-0"><span>Дата создания:</span> {{ order.created }}</li>
+                            {% if order.paid %}
+                            <li class="list-group-item border-0"><span>Статус заказа:</span> <span class="badge bg-success"> ОПЛАЧЕН</span></li>
+                            {% else %}
+                            <li class="list-group-item border-0"><span>Статус заказа:</span> <span class="badge bg-danger"> НЕ ОПЛАЧЕН</span></li>
+                            {% endif %}
+                            <li class="list-group-item border-0"><span>ИТОГО к оплате:</span> <span class="badge bg-success fs-6">{{ order.end_price }} руб.</span> </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-center">Товары</h5>
+                    <ul class="m-3 list-group list-group-flush">
+                        {% for item in order.order_items.all %}
+                        <li class="list-group-item"><span>{{ item.product.title }}</span> - {{ item.quantity }} шт. - {{ item.get_total_price|floatformat:"2" }} руб.</li>
+                        {% endfor %}
+                        <li class="list-group-item text-end pe-5"><span>Полная стоимость: </span> {{ order.total_price }} руб.</li>
+                        {% if order.discount_percent %}
+                        <li class="list-group-item text-end pe-5"><span>СКИДКА:</span> -{{ order.get_discount_count|floatformat:"2" }} руб. (-{{ order.discount_percent }}%)</li>
+                        <li class="list-group-item text-end pe-5"><span>Итоговая стоимость: </span> {{ order.end_price }} руб.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+           
+
+            <div class="paid-button p-3 mb-3 text-center">
+                {% if not order.paid %}
+                <form action="{% url 'order:order_detail' order_id=order.unique_id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Оплатить заказ</button>
+                </form>
+                {% else %}
+                <h5>Заказ успешно оплачен</h5>
+                <a href="{% url 'order:my_orders' %}">
+                    <button type="submit" class="btn btn-danger">Перейти в мои заказы</button>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

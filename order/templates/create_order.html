@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}
+Создание заказа
+{% endblock %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    {% if user.is_authenticated %}
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    {% endif %}
+    <div class="card mb-4">
+            <div class="card-header">Создание заказа
+                <a href="{% url 'users:addresses' %}">
+                    <button type="submit" class="btn btn-danger btn-sm float-end">Выбрать другой адрес</button>
+                </a>
+            </div>
+        <div class="card-body p-0">
+            <div class="card-address">
+                <h5 class="text-center">Адрес получателя</h5>
+                <ul class="m-3 list-group">
+                    <li class="list-group-item border-0"><span>ФИО:</span> {{ address.full_name }}</li>
+                    <li class="list-group-item border-0"><span>Номер телефона:</span> {{ address.phone_number }}</li>
+                    <li class="list-group-item border-0"><span>Адрес:</span> {{ address.get_full_address }}</li>
+                </ul>
+            </div>
+            
+            <div class="table-responsive table-billing-history">
+                <h5 class="text-center">Корзина</h5>
+                <table class="table mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th class="border-gray-200" scope="col">Фото</th>
+                            <th class="border-gray-200" scope="col">Товар</th>
+                            <th class="border-gray-200" scope="col">Количество</th>
+                            <th class="border-gray-200" scope="col">Цена за шт</th>
+                            <th class="border-gray-200" scope="col">Цена</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if cart.list_items %}
+                        {% for item in cart %}
+                        {% with product=item.product %}
+                        <tr class="align-middle">
+                            <td height="100px" width="100px"><a href="/shop/{{ product.id }}"><img height="100%" width="100%" class="object-fit-contain" src="{{ product.image.first.image.url }}" alt="{{ product.title }}"></a></td>
+
+                            <td><a href="/shop/{{ product.id }}">{{ product.title }}</a></td>
+
+                            <td>{{ item.quantity }}</td>
+
+                            <td>{{ item.price }} руб </td>
+
+                            <td class="itotal" data-id="{{ product.id }}">{{ item.total_price }} руб</td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">Список товаров в корзине пуст</td>
+                    </tr>
+                    {% endif %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success text-center" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if cart %}
+            <div class="card-total-price mt-3">
+                <h5 class="text-center">Стоимость</h5>
+                <ul class="m-3 list-group list-group-flush card-total-price-width text-center mx-auto">
+                    {% if cart.coupon %}
+                    <li class="list-group-item">
+                        <span class="d-block text-left">КУПОН:</span>
+                        <span class="d-block text-right ms-3">{{ cart.coupon }}</span>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <span class="d-block text-left">Полная стоимость:</span>
+                        <span class="d-block text-right ms-3">{{ cart.get_total_price }} руб.</span>
+                    </li>
+                    {% if cart.get_discount %}
+                    <li class="list-group-item">
+                        <span class="d-block text-left">СКИДКА:</span>
+                        <span class="d-block text-right ms-3">-{{ cart.get_discount|floatformat:'2' }} руб.</span>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <span class="d-block text-left">К оплате:</span>
+                        <span class="d-block text-right ms-3">{{ cart.get_the_final_total_price }} руб.</span>
+                    </li>
+                </ul>
+                <div class="create-order text-center pb-3 mb-3">
+                    <form action="{% url 'order:create_order' %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-danger ">Оплатить {{ cart.get_the_final_total_price }} руб.</button>
+                    </form>
+                </div>
+                
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

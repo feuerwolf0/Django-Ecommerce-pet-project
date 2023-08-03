@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Главная {% endblock %}
+{% block content %}
+{% load filters %}
+<main class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+            <article class="blog-post mt-5">
+                {% for tag in tags %}
+                {% with color=''|colorize_class %}
+
+                <a href="/tag/{{tag.slug}}" class="btn btn-{{color}} my-2 mx-2">{{ tag.name }}({{ tag.posts.count|add:tag.tags_products.count }})</a>
+
+                {% endwith %}
+                {% endfor %}
+            </article>
+        </div>
+        {% include 'block/rightbar.html' %}
+    </div>
+</main>
+{% endblock %}

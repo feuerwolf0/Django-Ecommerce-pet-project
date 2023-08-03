@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}
+Избранное
+{% endblock %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    <!-- Account page navigation-->
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    <!-- Billing history card-->
+    <div class="card mb-4">
+        <form method="POST" action="{% url 'store:wishlist' %}">
+            <div class="card-header">Список избранного
+                {% csrf_token %}
+                {% if wishlist.products.all %}
+                <button type="submit" onclick="return confirmDeleteAllList()" class="btn btn-danger btn-sm float-end">Очистить список</button>
+                {% endif %}
+            </div>
+        </form>
+        <div class="card-body p-0">
+            <div class="table-responsive table-billing-history">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="border-gray-200" scope="col">Товар</th>
+                            <th class="border-gray-200" scope="col">Наличие на складе</th>
+                            <th class="border-gray-200" scope="col">Цена</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for item in wishlist.products.all %}
+                        <tr>
+                            <td><a href="/shop/{{ item.id }}">{{ item.title }}</a></td>
+                            {% if item.stock == 0 %}
+                            <td><span class="text-danger stock-value">Нет в наличии</span></td>
+                            {% elif item.stock < 5 %}
+                            <td><span class="text-warning stock-value">Мало</span></td>
+                            {% else %}
+                            <td><span class="text-success stock-value">Много</span></td>
+                            {% endif %}
+                            <td>{{ item.price }} руб.</td>
+                            <td> 
+                                {% if item.stock %}
+                                    {% if item.id not in cart.list_items %}
+                                    <button type="button" data-product="{{ item.id }}" data-bool="0" class="btn btn-sm btn-success add-cart"><i class="me-1 fa fa-shopping-basket"></i>Добавить в корзину</button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-success" disabled><i class="me-1 fa fa-shopping-basket"></i>Товар в корзине</button>
+                                    {% endif %}
+                                {% endif %} 
+                            </td>
+                            <form method="POST" action="{% url 'store:wishlist' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{ item.id }}"/>
+                                <td><button type="submit" onclick="return confirmDeleteWishlist()" class="btn btn-sm btn-danger px-3" title="Удалить из списка">X</button> </td>
+                            </form>
+                        </tr>
+                    {% endfor %}
+                    {% if not wishlist.products.all %}
+                    <td colspan="4" class="text-center">Список избранного пуст</td>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmDeleteWishlist() {
+        return confirm("Вы точно хотите удалить это товар из избранного?");
+    };
+    function confirmDeleteAllList() {
+    return confirm("Вы точно хотите удалить весь список?");
+    }
+</script>
+{% endblock %}

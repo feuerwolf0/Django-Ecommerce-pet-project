@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}
+Профиль {{ user.username }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl px-4 mt-4 d-lg-block min-vh-100 ">
+    <!-- Account page navigation-->
+{% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Profile picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header text-center">Мои заказы</div>
+                <div class="card-body">
+                    <ul>
+                        <li>В этом разделе отображены ваши заказы</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">Заказы: {{ user.username }}</div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-light" role="alert">
+                            {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <h4>Мои заказы</h4>
+                    {% if not paid_orders and not unpaid_orders %}
+                     <div class="alert alert-light" role="alert">
+                         Заказов нет
+                     </div>
+                    {% else %}
+                    {% if unpaid_orders %}
+                    <div class="table-responsive table-billing-history mb-5">
+                        <h5 class="text-center">Неоплаченные заказы</h5>
+                        <table class="table mb-0 text-center">
+                            <thead>
+                                <tr>
+                                    <th class="border-gray-200" scope="col">Номер заказа</th>
+                                    <th class="border-gray-200" scope="col">Дата заказа</th>
+                                    <th class="border-gray-200" scope="col">Цена</th>
+                                    <th class="border-gray-200" scope="col">Статус заказа</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in unpaid_orders %}
+                                <tr>
+                                    <td><a href="{% url 'order:order_detail' order_id=order.unique_id %}">{{ order.unique_id }} </a></td>
+                                    <td>{{ order.created }}</td>
+                                    <td>{{ order.end_price }}</td>
+                                    <td><span class="badge bg-danger">Неоплачено</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if paid_orders %}
+                    <div class="table-responsive table-billing-history">
+                        <h5 class="text-center">Оплаченные заказы</h5>
+                        <table class="table mb-0 text-center">
+                            <thead>
+                                <tr>
+                                    <th class="border-gray-200" scope="col">Номер заказа</th>
+                                    <th class="border-gray-200" scope="col">Дата заказа</th>
+                                    <th class="border-gray-200" scope="col">Цена</th>
+                                    <th class="border-gray-200" scope="col">Статус заказа</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in paid_orders %}
+                                <tr>
+                                    <td><a href="{% url 'order:order_detail' order_id=order.unique_id %}">{{ order.unique_id }} </a></td>
+                                    <td>{{ order.created }}</td>
+                                    <td>{{ order.end_price }}</td>
+                                    <td><span class="badge bg-success">Оплачено</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

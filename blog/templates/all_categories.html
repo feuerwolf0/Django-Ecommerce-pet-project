@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Главная {% endblock %}
+{% block content %}
+{% load filters %}
+<main class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+            <article class="blog-post mt-5">
+                {% for cat in categories %}
+                {% with color=''|colorize_class %}
+
+                <a href="/category/{{cat.slug}}" class="btn btn-{{color}} my-2 mx-2">{{ cat.name }}({{ cat.post_category.count|add:cat.category_products.count }})</a>
+
+                {% endwith %}
+                {% endfor %}
+            </article>
+        </div>
+        {% include 'block/rightbar.html' %}
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'shop.html' %}
+{% block head_title %}
+{{ current_category }}
+{% endblock %}
+{% block current_url %}
+{% url 'store:category' current_category.slug %}
+{% endblock %}

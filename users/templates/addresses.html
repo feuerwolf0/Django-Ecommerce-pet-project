@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}
+Адреса доставки
+{% endblock %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    <!-- Account page navigation-->
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    <!-- Billing history card-->
+    <div class="card mb-4">
+            <div class="card-header">Список адресов
+                <a href="{% url 'users:create_address' %}"><button type="submit" class="btn btn-danger btn-sm float-end">Добавить адрес</button></a>
+            </div>
+        <div class="card-body p-0">
+            <div class="table-responsive table-billing-history">
+                <table class="table mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th class="border-gray-200" scope="col">Название адреса</th>
+                            <th class="border-gray-200" scope="col">Адрес</th>
+                            <th class="border-gray-200" scope="col">Основной адрес?</th>
+                            <th class="border-gray-200" scope="col">Удалить</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-success text-center" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if addresses %}
+                        {% for address in addresses %}
+                        <tr>
+                            <td><a href="{% url 'users:change_address' address.id %}"> {{ address.name }}</a></td>
+                            <td>{{ address.get_full_address }}</td>
+                            <td>
+                                {% if address.is_main %}
+                                <span class="badge bg-success">Выбран</span>
+                                {% else %}
+                                <form method="POST" action="{% url 'users:set_main' address.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit"  class="btn btn-sm btn-secondary">Выбрать основным</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            <form method="POST" action="{% url 'users:delete_address' address.id %}">
+                                {% csrf_token %}
+                                <td><button type="submit" onclick="return confirmDeleteAddress()" class="btn btn-sm btn-danger px-3" title="Удалить адрес">X</button> </td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">Список адресов пуст</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmDeleteAddress() {
+        return confirm("Вы точно хотите удалить этот адрес?");
+    };
+</script>
+{% endblock %}

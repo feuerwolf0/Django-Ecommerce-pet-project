@@ -1,0 +1,27 @@
+<div class="col-sm-3 hidden-xs">
+    <div class="list-group">
+        <a href="/shop/" class="list-group-item {% if request.path == '/shop/' %}active {% endif %}">Все товары</a>
+        {% for cat in categories %}
+        <a href="/shop/category/{{ cat.slug }}/" class="list-group-item {% if request.path == '/shop/category/'|add:cat.slug|add:'/' %}active {% endif %}">{{ cat.name }}</a>
+        {% endfor %}
+    </div>
+    <div class="product-sidebar">
+        <h5 class="text-center my-3">Новые товары</h5>
+        {% for item in last_products %}
+        <!-- Featured Product Item -->
+        <div class="product-item bg-dark">
+            <div class="image text-center">
+                <a href="/shop/{{ item.id }}"><img src="{{ item.image.first.image.url }}"
+                                                   alt="{{ item.title }}"></a>
+            </div>
+            <div class="name">
+                <a href="/shop/{{ item.id }}">{{ item.title }}</a>
+            </div>
+            <div class="price">
+                <span>{{ item.price }} руб.</span>
+            </div>
+        </div>
+        <!--/ Featured Product Item -->
+        {% endfor %}
+    </div>
+</div>

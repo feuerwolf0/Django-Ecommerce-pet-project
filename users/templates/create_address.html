@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}
+Создание адреса
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl px-4 mt-4 d-lg-block min-vh-100 ">
+    <!-- Account page navigation-->
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Profile picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header">Создание адреса</div>
+                <div class="card-body text-center">
+                    <p>Все поля со звездочой (*) должны быть заполнены</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">Детали профиля: {{ user.username }} <span>Создан: {{ user.profile.created_at }}</span></div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-light" role="alert">
+                            {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if form.errors %}
+                    <div class="alert alert-light" role="alert">
+                      {% for field_err in form.errors.values %}
+                        {% for error in field_err %}
+                          {{ error }}
+                        {% endfor %}
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    <form method="POST" action="{% url 'users:create_address' %}">
+                        {% csrf_token %}
+                        <!-- Название адреса-->
+                        <div class="row gx-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="small mb-1" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <!-- ФИО-->
+                        <div class="row gx-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="small mb-1" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                                {{ form.full_name }}
+                            </div>
+                        </div>
+                        <!-- Номер телефона и Почтовый индекс-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Номер телефона-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                                {{ form.phone_number }}
+                            </div>
+                        </div>
+                        <!-- Страна -->
+                        <div class="row gx-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="{{ form.country.id_for_label }}">{{ form.country.label }}</label>
+                                {{ form.country }}
+                            </div>
+                            <!-- Почтовый индекс-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="{{ form.postal_code.id_for_label }}">{{ form.postal_code.label }}</label>
+                                {{ form.postal_code }}
+                            </div>
+                        </div>
+                        <!-- Город и Регион-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Город-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+                                {{ form.city }}
+                            </div>
+                            <!-- Регион-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="{{ form.region.id_for_label }}">{{ form.region.label }}</label>
+                                {{ form.region }}
+                            </div>
+                        </div>
+                        <!-- Адрес-->
+                        <div class="row gx-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="small mb-1" for="{{ form.address_line.id_for_label }}">{{ form.address_line.label }}</label>
+                                {{ form.address_line }}
+                            </div>
+                        </div>
+                        <button class="btn btn-success" type="submit">Сохранить адрес</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

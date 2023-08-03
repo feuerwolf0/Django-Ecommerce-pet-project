@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}
+Корзина
+{% endblock %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    {% if user.is_authenticated %}
+    {% include 'block/nav_profile.html' %}
+    <hr class="mt-0 mb-4">
+    {% endif %}
+    <div class="card mb-4">
+            <div class="card-header">Корзина
+                <form method="POST" action="{% url 'store:clean_cart' %}">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirmDeleteCart()" class="btn btn-danger btn-sm float-end">Очистить корзину</button>
+                </form>
+                
+            </div>
+        <div class="card-body p-0">
+            <div class="table-responsive table-billing-history">
+                <table class="table mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th class="border-gray-200" scope="col">Фото</th>
+                            <th class="border-gray-200" scope="col">Товар</th>
+                            <th class="border-gray-200" scope="col">Количество</th>
+                            <th class="border-gray-200" scope="col">Цена за шт</th>
+                            <th class="border-gray-200" scope="col">Цена</th>
+                            <th class="border-gray-200" scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if cart.list_items %}
+                        {% for item in cart %}
+                        {% with product=item.product %}
+                        <tr class="align-middle">
+                            <td height="100px" width="100px"><a href="/shop/{{ product.id }}"><img height="100%" width="100%" class="object-fit-contain" src="{{ product.image.first.image.url }}" alt="{{ product.title }}"></a></td>
+
+                            <td><a href="/shop/{{ product.id }}">{{ product.title }}</a></td>
+
+                            <td><div class="input-group" style="
+                                width: 171px;">
+                                <button class="btn btn-sm btn-dark border border-secondary px-3 js-cart-btn" type="button" data-type="minus" data-id="{{ product.id }}">
+                                  <i class="fas fa-minus" aria-hidden="true"></i>
+                                </button>
+                                <input type="text" class="form-control form-control-sm text-center border border-secondary bg-dark text-light js-cart-input" data-id="{{ product.id }}" placeholder="{{ item.quantity }}" aria-label="Количество товара" value="{{ item.quantity }}" min="1" max="{{ product.stock }}">
+                                <button class="btn btn-sm btn-dark border border-secondary px-3 js-cart-btn" type="button" data-type="plus" data-id="{{ product.id }}">
+                                  <i class="fas fa-plus" aria-hidden="true"></i>
+                                </button>
+                              </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-column">
+                                    {% if product.old_price %}
+                                    <span class="text-muted text-decoration-line-through ">{{ product.old_price }} руб</span>
+                                    {% endif %}
+                                    {{ item.price }} руб 
+                                </div>
+                            </td>
+
+                            <td class="itotal" data-id="{{ product.id }}">{{ item.total_price }} руб</td>
+                            
+                            <td>
+                                <form method="POST" action="{% url 'store:remove_cart' product.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" onclick="return confirmDeleteItemCart()" class="btn btn-sm btn-danger px-2" title="Удалить из списка">X</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">Список товаров в корзине пуст</td>
+                    </tr>
+                    {% endif %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if 'invalid' not in message.tags and 'discount' not in messsage.tags %}
+                            <div class="alert alert-success text-center" role="alert">
+                                {{ message }}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-end p-4">
+                
+                <div class="d-flex flex-column">
+                    
+                    <form method="POST" action="{% url 'store:apply_discount' %}">
+                        <div class="input-group coupon-input-group">
+                            {% csrf_token %}
+                            <input type="text" name='promocode' class="form-control" placeholder="ПРОМОКОД" aria-label="ПРОМОКОД" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-success" type="submit" id="button-addon2">Применить</button>
+                        </div>
+                    </form>
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if 'invalid' in message.tags %}
+                            <span class="my-auto text-danger text-center">{{ message }}</span>
+                            {% endif %}
+                            {% if 'discount' in message.tags %}
+                            <span class="my-auto text-success text-center">{{ message }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-end p-4">
+                {% if cart %}
+                <div class="d-flex align-items-end pe-5">
+                    <a href="{% url 'order:create_order' %}">
+                        <button class="btn btn-danger">Оформить заказ</button>
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="d-flex flex-column">
+                    {% if cart.coupon %}
+                    <span class="my-auto text-end text-success">{{ cart.coupon }}</span>
+                    <span class="my-auto text-end text-muted">Скидка -<span class="js-discount text-muted">{{ cart.get_discount|floatformat:'2' }}</span> руб.</span>
+                    {% endif %}
+                    <div>
+                        <span class="fs-5"> ИТОГО: <span class="total-price">{{ cart.get_the_final_total_price }}</span> руб.</span>
+                    </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmDeleteItemCart() {
+        return confirm("Вы точно хотите удалить это товар из корзины?");
+    };
+    function confirmDeleteCart() {
+    return confirm("Вы точно хотите удалить содержимое корзины?");
+    }
+</script>
+{% endblock %}

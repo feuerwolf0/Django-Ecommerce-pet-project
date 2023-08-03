@@ -1,0 +1,9 @@
+<nav class="nav nav-borders">
+    <a class="nav-link nav-profile {% if request.path == '/profile/' %}active{% endif %} ms-0" href="{% url 'users:profile' %}">Профиль</a>
+    <a class="nav-link nav-profile {% if request.path == '/profile/activity/' %}active{% endif %}" href="{% url 'users:activity' %}">Комментари и Вопросы</a>
+    <a class="nav-link nav-profile {% if request.path == '/order/my_orders/' %}active{%endif %}" href="{% url 'order:my_orders' %}">Мои заказы</a>
+    <a class="nav-link nav-profile {% if request.path == '/shop/cart/' %}active{%endif %}" href="{% url 'store:cart_view' %}">Корзина</a>
+    <a class="nav-link nav-profile {% if request.path == '/shop/wishlist/' %}active{%endif %}" href="{% url 'store:wishlist' %}">Избранное</a>
+    <a class="nav-link nav-profile {% if request.path == '/profile/security/' %}active{% endif %}" href="{% url 'users:security' %}">Безопасность</a>
+    <a class="nav-link nav-profile {% if request.path == '/profile/addresses/' %}active{% endif %}" href="{% url 'users:addresses' %}">Адреса доставки</a>
+</nav>
