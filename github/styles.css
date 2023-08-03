@@ -1,0 +1,11 @@
+/* Стилизация заголовка (summary) */
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Стилизация содержимого (content) */
+details div {
+  margin: 1em 0;
+}
+

@@ -233,16 +233,4 @@ body {
 
 </details>
 
-
-<style>
-  /* Стилизация заголовка (summary) */
-  details summary {
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  /* Стилизация содержимого (content) */
-  details div {
-    margin: 1em 0;
-  }
-</style>
+<link rel="stylesheet" href="github/styles.css">
