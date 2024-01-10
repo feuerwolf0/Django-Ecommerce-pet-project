@@ -6,7 +6,7 @@ from django.db import transaction
 
 from blog.models import Category
 from order.models import Order, OrderItem
-from order.task import order_created
+from order.tasks import order_created
 from shop.cart import Cart
 from users.models import Address
 
@@ -61,7 +61,7 @@ def create_order_view(request):
                                              unit_price=item['price'],
                                              quantity=item['quantity'])
                 # Отправляю письмо на почту
-                # order_created(order_number)
+                order_created.delay(order_number)
 
                 cart.clean()
 

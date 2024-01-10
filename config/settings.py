@@ -1,25 +1,19 @@
 import os
-import configparser
 from pathlib import Path
 from django.urls.base import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Импортирую конфиг
-config = configparser.ConfigParser()
-config.read(os.path.join(Path(__file__).resolve().parent, 'conf.ini'))
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ac@qt216vew_(k=+49oerripksf#b&v0&$%^&pu4e!orox0(vr'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', 0)))
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split()
 
 
 # Application definition
@@ -141,16 +135,28 @@ DEFAULT_AVATAR = 'avatars/default.png'
 MAX_FILE_SIZE_MB = 5
 
 EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-EMAIL_HOST = config.get('settings', 'EMAIL_HOST')  # Замените на адрес вашего SMTP-сервера
-EMAIL_PORT = 465  # Порт вашего SMTP-сервера (обычно 587 или 25)
-EMAIL_HOST_USER = config.get('settings', 'EMAIL_HOST_USER')  # Ваше имя пользователя для авторизации на SMTP-сервере
-EMAIL_HOST_PASSWORD = config.get('settings', 'EMAIL_HOST_PASSWORD')  # Ваш пароль для авторизации на SMTP-сервере
+EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST')
+EMAIL_PORT = os.environ.get('DJANGO_EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD')
 # EMAIL_USE_TLS = True  # Использовать ли шифрование TLS/SSL
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = config.get('settings', 'DEFAULT_FROM_EMAIL')  # Ваш адрес электронной почты
+DEFAULT_FROM_EMAIL = os.environ.get('DJANGO_DEFAULT_FROM_EMAIL')
 
 PASSWORD_RESET_TOKEN_TIMEOUT = 24*3600
 
 SESSION_COOKIE_SECURE = True
 
-BASE_URL = 'http://127.0.0.1:8000/'
+BASE_URL = 'http://127.0.0.1:8000'
+
+# redis
+REDIS_HOST = 'redis'
+REDIS_PORT = '6379'
+
+# Celery
+CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

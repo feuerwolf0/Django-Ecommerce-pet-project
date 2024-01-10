@@ -1,11 +1,13 @@
 # Django E-commerce
-Django-ecommerce - это мой первый pet-проект онлайн-магазина.  
+Django-ecommerce - это pet-проект онлайн-магазина.  
 Данный проект не предназначен для коммерческого использования. 
 
 ## Используемые инструменты и технологии:
-- Python 3.11
+- Python 3.12
 - Django 4.2.3
-- JS, jQuery, Ajax
+- Redis
+- Docker, Docker Compose
+- JavaScript, jQuery, Ajax
 - SQLite
 - HTML, CSS, Bootstrap 5
 
@@ -30,13 +32,8 @@ Django-ecommerce - это мой первый pet-проект онлайн-ма
 - Создание и публикация новостей
 - Модерирование комментариев (подтвердить, удалить, изменить)  
   
-Все административные функции реализованы посредством стандартной административной панели Django 
-
-### В разработке:
-- Возможность задавать вопросы к товару и получать на них ответ
-- Celery для отправки письма с заказом на почту и автоматического удаления заказа в случае неоплаты его в течение 1 часа
-- Поиск по сайту
-
+Все административные функции реализованы посредством стандартной административной панели Django
+  
 ## О проекте
 В данном проекте frontend'у не уделялось особое внимание. В качестве большинства элементов были взяты готовые сниппеты, найденные в интернете и немного доработанные.   
 Весь дизайн написан с минимальным количеством собственных стилей, используются базовые возможности Bootstrap 5.  
@@ -51,23 +48,55 @@ Django-ecommerce - это мой первый pet-проект онлайн-ма
 Для добавления товара в корзину/список избранного используется Ajax.
 Для лайков также используется ajax и jquery.  
 
-
-## Запуск проекта
-1. Создать миграции ```python manange.py makemigrations users, order, shop, blog```
-2. Применить миграции ```python manange.py migrate```
-3. Создать файл conf.ini рядом с файлом settings.py и добавить туда
+## Запуск проекта с тестовыми данными (заполненные товары в SQLite)
+1. Выполнить клонирование репозитория ```git clone <>```.
+2. Зайти в папку проекта и создать файл ```.env.dev``` для переменных окружения.
+3. В файл ```.env.dev``` добавить:  
 ```
-[settings]
-
-EMAIL_HOST = "******" # Замените на адрес вашего SMTP-сервера
-EMAIL_HOST_USER = "******"  # Ваше имя пользователя для авторизации на SMTP-сервере
-EMAIL_HOST_PASSWORD = "******"  # Ваш пароль для авторизации на SMTP-сервере
-DEFAULT_FROM_EMAIL = "******"  # Ваш адрес электронной почты
+DJANGO_DEBUG=1
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+DJANGO_SECRET_KEY= <secret_key>
+DJANGO_EMAIL_HOST = <smtp_server>
+DJANGO_EMAIL_PORT = <smtp_port>
+DJANGO_EMAIL_HOST_USER = <smtp_email_host_user>
+DJANGO_EMAIL_HOST_PASSWORD = <smtp_user_password>
+DJANGO_DEFAULT_FROM_EMAIL = <smtp_email_from>
 ```
+где ```<...>``` подставить собственные значения.
+4. Из папки проекта выполнить в терминале команду ```docker compose up```
+5. Сайт будет доступен по адресу ```http://127.0.0.1:8000/```
+6. Логин/Пароль demo Администратора:
+
+```
+login: admin
+password: adminadmin
+```
+
+
+## Запуск "чистого" проекта без тестовой базы данных
+1. Выполнить клонирование репозитория ```git clone <>```.
+2. Зайти в папку проекта и создать файл ```.env.dev``` для переменных окружения.
+3. В файл ```.env.dev``` добавить:  
+```
+DJANGO_DEBUG=1
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+DJANGO_SECRET_KEY= <secret_key>
+DJANGO_EMAIL_HOST = <smtp_server>
+DJANGO_EMAIL_PORT = <smtp_port>
+DJANGO_EMAIL_HOST_USER = <smtp_email_host_user>
+DJANGO_EMAIL_HOST_PASSWORD = <smtp_user_password>
+DJANGO_DEFAULT_FROM_EMAIL = <smtp_email_from>
+```
+где ```<...>``` подставить собственные значения.
+4. Удалить файл ```db.sqlite3```
+5. Создать миграции ```python manange.py makemigrations users, order, shop, blog```
+6. Применить миграции ```python manange.py migrate```
+7. Из папки проекта выполнить в терминале команду ```docker compose up```
+8. Сайт будет доступен по адресу ```http://127.0.0.1:8000/```
 
 ## Скриншоты проекта
 
-Примечание: При использовании расширения для браузера GoFullPageScreenshot некорректно отображается background сайта. При просмотре сайта задний фон отображается корректно, одним градиентом
+*При использовании расширения для браузера GoFullPageScreenshot некорректно отображается background сайта на скриншотах. При просмотре сайта background отображается корректно, единым градиентом
 ```
 body {
   background: linear-gradient(to bottom, #1a237e, #232f70, #2b3a62);
