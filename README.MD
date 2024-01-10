@@ -63,7 +63,7 @@ DJANGO_EMAIL_HOST_USER = <smtp_email_host_user>
 DJANGO_EMAIL_HOST_PASSWORD = <smtp_user_password>
 DJANGO_DEFAULT_FROM_EMAIL = <smtp_email_from>
 ```
-где ```<...>``` подставить собственные значения.
+где ```<...>``` подставить собственные значения.  
 4. Из папки проекта выполнить в терминале команду ```docker compose up```
 5. Сайт будет доступен по адресу ```http://127.0.0.1:8000/```
 6. Логин/Пароль demo Администратора:
